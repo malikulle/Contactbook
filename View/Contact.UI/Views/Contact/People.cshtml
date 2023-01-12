@@ -1,0 +1,110 @@
+﻿@model Response<List<PersonViewModel>>
+
+
+<div id="modalPlaceHolder" aria-hidden="true"></div>
+<div>
+	<h1>Person List</h1>
+	<button id="btn-create-contact" class="btn btn-primary">Create Contact Person</button>
+</div>
+
+@if (Model.Data != null)
+{
+	<table class="table" id="person-table">
+		<thead>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">Name</th>
+				<th scope="col">Surname</th>
+				<th scope="col">Company</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in Model.Data)
+			{
+				<tr name="@item.Id">
+					<th scope="row">@item.Id</th>
+					<td>@item.Name</td>
+					<td>@item.Surname</td>
+					<td>@item.Company</td>
+					<td>
+						<button data-id="@item.Id" class="btn btn-danger btnDelete">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@section Scripts {
+<script>
+
+	$(document).ready(function(){
+
+		// Create Person Function
+		$(function(){
+			const url = "AddPerson"
+			const placeHolderDiv = $('#modalPlaceHolder');
+			$("#btn-create-contact").click(function(){
+				$.get(url).done(function(data){
+					placeHolderDiv.html(data);
+					placeHolderDiv.find(".modal").modal("show")
+				})
+			})
+			placeHolderDiv.on("click","#btnSave",function(event) {
+				event.preventDefault();
+				const form = $("#form-person-add")
+				const actionUrl = form.attr('action');
+				const dataToSend = form.serialize();
+				$.post(actionUrl,dataToSend).done(function(data){
+					const ajaxModel = jQuery.parseJSON(data);
+					 var newFormBody = $('.modal-body', ajaxModel.PartialView);
+					placeHolderDiv.find('.modal-body').replaceWith(newFormBody);
+					var isValid = newFormBody.find('[name="IsValid"]').val() === 'True';
+					if(isValid){
+						placeHolderDiv.find(".modal").modal("hide");
+						const newTableRow =  `
+							<tr name='${ajaxModel.Data.Id}'>
+								<th scope="row">${ajaxModel.Data.Id}</th>
+								<td>${ajaxModel.Data.Name}</td>
+								<td>${ajaxModel.Data.Surname}</td>
+								<td>${ajaxModel.Data.Company}</td>
+								<td>
+									<button data-id="${ajaxModel.Data.Id}" class="btn btn-danger btnDelete">Delete</button>
+								</td>
+							</tr>
+						`
+						var newTableRowObject = $(newTableRow);
+						newTableRowObject.hide();
+						$('#person-table').append(newTableRowObject);
+						newTableRowObject.fadeIn(3500);
+					}
+				})
+			})
+		});
+		// Create Person Function End
+
+		// Delete Person Function
+		$(function(){
+			$("#person-table").on("click","td .btnDelete",function(){
+				const id = $(this).attr("data-id");
+				if(confirm("Are you sure to Delete ?")){
+					const url = "DeletePerson"
+					const dataToSend = {
+						id
+					}
+					$.post(url,dataToSend).done(function(data){
+						if(!data.hasFailed && data.data){
+							alert("Person Deleted!!!")
+							const tableRow = $(`[name="${id}"]`);
+                            tableRow.fadeOut(1500);
+						}
+					})
+				}
+			})
+		})
+		// Delete Person Function End
+	})
+
+</script>
+}

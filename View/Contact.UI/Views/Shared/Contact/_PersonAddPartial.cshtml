@@ -1,0 +1,34 @@
+﻿@model CreatePersonViewModel
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title"><span class="fas fa-plus"></span> Create Person</h5>
+			</div>
+			<div class="modal-body">
+				<form id="form-person-add" asp-action="AddPerson" asp-controller="Contact">
+					<input name="IsValid" type="hidden" value="@ViewData.ModelState.IsValid.ToString()" />
+					<div asp-validation-summary="All" class="text-danger" id="validation-summary" aria-hidden="true" style="display:none;"></div>
+					<div class="form-group">
+                        <label asp-for="Name"></label>
+                        <input class="form-control" asp-for="Name" />
+                        <span class="text-danger" asp-validation-for="Name"></span>
+                    </div>
+					<div class="form-group">
+                        <label asp-for="Surname"></label>
+                        <input class="form-control" asp-for="Surname" />
+                        <span class="text-danger" asp-validation-for="Surname"></span>
+                    </div>
+					<div class="form-group">
+                        <label asp-for="Company"></label>
+                        <input class="form-control" asp-for="Company" />
+                        <span class="text-danger" asp-validation-for="Company"></span>
+                    </div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary btn-block" id="btnSave"><span class="fas fa-save"></span> Save</button>
+			</div>
+		</div>
+	</div>
+</div>
