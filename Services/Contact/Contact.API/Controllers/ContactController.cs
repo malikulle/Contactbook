@@ -35,16 +35,34 @@ namespace Contact.API.Controllers
             return await _personService.CreatePerson(person);
         }
 
+        [HttpPut("person")]
+        public async Task<Response<PersonViewModel>> UpdatePerson([FromBody] UpdatePersonViewModel person)
+        {
+            return await _personService.UpdatePerson(person);
+        }
+
         [HttpDelete("person/{id}")]
         public async Task<Response<bool>> DeletePerson([FromRoute] Guid id)
         {
             return await _personService.DeletePerson(id);
         }
 
+        [HttpGet("personContact/{id}")]
+        public async Task<Response<PersonContactViewModel>> GetPersonContact([FromRoute] Guid id)
+        {
+            return await _personService.GetPersonContact(id);
+        }
+
         [HttpPost("personContact")]
         public async Task<Response<PersonContactViewModel>> CreatePersonContact([FromBody] CreatePersonContactViewModel personContact)
         {
             return await _personService.CreatePersonContact(personContact);
+        }
+
+        [HttpPut("personContact")]
+        public async Task<Response<PersonContactViewModel>> UpdatePerson([FromBody] UpdatePersonContactViewModel personContact)
+        {
+            return await _personService.UpdatePersonContact(personContact);
         }
 
         [HttpDelete("personContact/{id}")]

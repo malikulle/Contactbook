@@ -24,9 +24,18 @@ namespace Contact.UI.Controllers
         }
 
         [HttpGet]
+        public IActionResult Person(Guid id)
+        {
+            var response = _contactHttpClientService.GetPerson(id);
+            if (response.HasFailed || response.Data is null)
+                return RedirectToAction("People");
+            return View(response.Data);
+        }
+
+        [HttpGet]
         public IActionResult AddPerson()
         {
-            var model = new CreatePersonViewModel();
+            CreatePersonViewModel model = new();
             return PartialView("/Views/Shared/Contact/_PersonAddPartial.cshtml", model);
         }
 
@@ -56,9 +65,99 @@ namespace Contact.UI.Controllers
         }
 
         [HttpPost]
+        public IActionResult Person(UpdatePersonViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                _contactHttpClientService.UpdatePerson(model);
+            }
+            var person = _contactHttpClientService.GetPerson(model.Id);
+            return View(person.Data);
+        }
+
+        [HttpGet]
+        public IActionResult AddPersonContact(string id)
+        {
+            CreatePersonContactViewModel model = new();
+            model.PersonId = new Guid(id);
+            return PartialView("/Views/Shared/Contact/_PersonContactAddPartial.cshtml", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPersonContact(CreatePersonContactViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = _contactHttpClientService.CreatePersonContact(model);
+                if (!result.HasFailed && result.Data != null)
+                {
+                    var createPersonContactAjaxViewModel = JsonSerializer.Serialize(new CreatePersonContactAjaxViewModel()
+                    {
+                        Data = result.Data,
+                        PartialView = await this.RenderViewToStringAsync("/Views/Shared/Contact/_PersonContactAddPartial.cshtml", model)
+                    });
+                    return Json(createPersonContactAjaxViewModel);
+                }
+            }
+
+            var createPersonContactAjaxErrorViewModel = JsonSerializer.Serialize(new CreatePersonContactAjaxViewModel()
+            {
+                PartialView = await this.RenderViewToStringAsync("/Views/Shared/Contact/_PersonContactAddPartial.cshtml", model)
+            });
+
+            return Json(createPersonContactAjaxErrorViewModel);
+        }
+
+        [HttpGet]
+        public IActionResult UpdatePersonContact(string id)
+        {
+            UpdatePersonContactViewModel model = new ();
+            var result = _contactHttpClientService.GetPersonContact(new Guid(id));
+            if(!result.HasFailed && result.Data != null)
+			{
+                model.Id = result.Data.Id;
+                model.Description = result.Data.Description;
+                model.ContactType = result.Data.ContactType;
+			}
+            return PartialView("/Views/Shared/Contact/_PersonContactUpdatePartial.cshtml", model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePersonContact(UpdatePersonContactViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = _contactHttpClientService.UpdatePersonContact(model);
+                if (!result.HasFailed && result.Data != null)
+                {
+                    var createPersonContactAjaxViewModel = JsonSerializer.Serialize(new CreatePersonContactAjaxViewModel()
+                    {
+                        Data = result.Data,
+                        PartialView = await this.RenderViewToStringAsync("/Views/Shared/Contact/_PersonContactUpdatePartial.cshtml", model)
+                    });
+                    return Json(createPersonContactAjaxViewModel);
+                }
+            }
+
+            var createPersonContactAjaxErrorViewModel = JsonSerializer.Serialize(new CreatePersonContactAjaxViewModel()
+            {
+                PartialView = await this.RenderViewToStringAsync("/Views/Shared/Contact/_PersonContactUpdatePartial.cshtml", model)
+            });
+
+            return Json(createPersonContactAjaxErrorViewModel);
+        }
+
+        [HttpPost]
         public IActionResult DeletePerson(DeletePersonAjaxRequest request)
         {
             var result = _contactHttpClientService.DeletePerson(request.Id);
+            return Json(result);
+        }
+
+        [HttpPost]
+        public IActionResult DeletePersonContact(DeletePersonAjaxRequest request)
+        {
+            var result = _contactHttpClientService.DeletePersonContact(request.Id);
             return Json(result);
         }
     }

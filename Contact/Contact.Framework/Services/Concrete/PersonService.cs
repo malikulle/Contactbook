@@ -23,7 +23,7 @@ namespace Contact.Framework.Services.Concrete
         public async Task<Response<PersonViewModel>> CreatePerson(CreatePersonViewModel person)
         {
             var response = new Response<PersonViewModel>();
-            Entity.Person entity = new();
+            Person entity = new();
             entity.Status = Status.Active;
             entity.Name = person.Name;
             entity.Surname = person.Surname;
@@ -97,6 +97,46 @@ namespace Contact.Framework.Services.Concrete
             var entity = await _context.People.Where(op => op.Id == id).Include(op => op.PersonContacts.Where(x => x.Status != Status.Deleted)).FirstOrDefaultAsync();
             var mappedObject = _mapper.Map<PersonViewModel>(entity);
             response.SetData(mappedObject);
+            return response;
+        }
+
+		public async Task<Response<PersonContactViewModel>> GetPersonContact(Guid id)
+		{
+            var response = new Response<PersonContactViewModel>();
+            var entity = await _context.PersonContacts.Where(op => op.Id == id).FirstOrDefaultAsync();
+            var mappedObject = _mapper.Map<PersonContactViewModel>(entity);
+            response.SetData(mappedObject);
+            return response;
+        }
+
+		public async Task<Response<PersonViewModel>> UpdatePerson(UpdatePersonViewModel person)
+        {
+            var response = new Response<PersonViewModel>();
+            var entity = await _context.People.Where(op => op.Id == person.Id).FirstOrDefaultAsync();
+            if (entity != null)
+            {
+                entity.Name = person.Name;
+                entity.Surname = person.Surname;
+                entity.Company = person.Company;
+                await _context.SaveChangesAsync();
+                var mappedObject = _mapper.Map<PersonViewModel>(entity);
+                response.SetData(mappedObject);
+            }
+            return response;
+        }
+
+        public async Task<Response<PersonContactViewModel>> UpdatePersonContact(UpdatePersonContactViewModel personContact)
+        {
+            var response = new Response<PersonContactViewModel>();
+            var entity = await _context.PersonContacts.Where(op => op.Id == personContact.Id).FirstOrDefaultAsync();
+            if (entity != null)
+            {
+                entity.ContactType = personContact.ContactType;
+                entity.Description = personContact.Description;
+                await _context.SaveChangesAsync();
+                var mappedObject = _mapper.Map<PersonContactViewModel>(entity);
+                response.SetData(mappedObject);
+            }
             return response;
         }
     }

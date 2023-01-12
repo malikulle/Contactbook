@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonProject.Enum;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,15 @@ namespace CommonProject.ViewModels.Person
     public class PersonContactViewModel
     {
         public Guid Id { get; set; }
-        public int ContactType { get; set; }
+        public ContactType ContactType { get; set; }
         public string Description { get; set; }
         public Guid PersonId { get; set; }
+        public string ContactTypeString
+        {
+            get
+            {
+                return ContactType.ToString();
+            }
+        }
     }
 }

@@ -29,6 +29,7 @@
 					<td>@item.Company</td>
 					<td>
 						<button data-id="@item.Id" class="btn btn-danger btnDelete">Delete</button>
+						<a asp-controller="Contact" asp-action="Person" asp-route-id="@item.Id" data-id="@item.Id" class="btn btn-secondary">Detail</a>
 					</td>
 				</tr>
 			}
@@ -71,6 +72,7 @@
 								<td>${ajaxModel.Data.Company}</td>
 								<td>
 									<button data-id="${ajaxModel.Data.Id}" class="btn btn-danger btnDelete">Delete</button>
+									<a href='/Contact/Person/${ajaxModel.Data.Id}' data-id="${ajaxModel.Data.Id}" class="btn btn-secondary">Detail</a>
 								</td>
 							</tr>
 						`
