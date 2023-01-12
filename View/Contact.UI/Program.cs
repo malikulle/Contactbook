@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<APISettings>(builder.Configuration.GetSection("APISettings"));
 builder.Services.AddScoped<IContactHttpClientService, ContactHttpClientService>();
-
+builder.Services.AddScoped<IReportHttpClientService, ReportHttpClientService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

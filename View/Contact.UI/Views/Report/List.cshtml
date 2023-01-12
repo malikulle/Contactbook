@@ -1,0 +1,78 @@
+﻿@model Response<List<ContactReportViewModel>>
+
+
+<div>
+	<h1>Report List</h1>
+	<button id="btn-request" class="btn btn-primary">Request Report</button>
+</div>
+<table class="table" id="report-table">
+	<thead>
+		<tr>
+			<th scope="col">#</th>
+			<th>Report Date</th>
+			<th>Report Type</th>
+			<th>File</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model.Data)
+		{
+			<tr name="@item.Id">
+				<th scope="row">@item.Id</th>
+				<th>@item.ReportDateString</th>
+				<th>@item.ReportTypeString</th>
+				<th>
+					@if (!string.IsNullOrEmpty(item.FilePath))
+					{
+						<a href="@item.FilePath" target="_blank">Download</a>
+					}
+				</th>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@section Scripts {
+<script>
+
+	$(document).ready(function(){
+
+		$(function(){
+			function GetFilePath(data){
+			if(data.filePath){
+				return `<a href="${data.filePath}" target="_blank">Download</a>`
+			}
+			else {
+				return "";
+			}
+			}
+
+			$("#btn-request").click(function(){
+				const url = "/Report/RequestReport"
+				$.post(url,{}).done(function(data) {
+					if(data.data){
+						const newTableRow =  `
+						<tr name="${data.data.id}">
+							<th scope="row">${data.data.id}</th>
+							<th>${data.data.reportDateString}</th>
+							<th>${data.data.reportTypeString}</th>
+							<th>${GetFilePath(data.data)}</th>
+						</tr>
+						`
+						var newTableRowObject = $(newTableRow);
+						newTableRowObject.hide();
+						$('#report-table').append(newTableRowObject);
+						newTableRowObject.fadeIn(3500);
+					}
+
+				})
+			})
+
+		})
+
+
+
+	})
+
+</script>
+}

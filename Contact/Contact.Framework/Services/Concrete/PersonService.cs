@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CommonProject.Entity;
+using CommonProject.Enum;
 using CommonProject.Result;
 using CommonProject.ViewModels.Person;
 using Contact.Framework.Context;
@@ -100,8 +101,8 @@ namespace Contact.Framework.Services.Concrete
             return response;
         }
 
-		public async Task<Response<PersonContactViewModel>> GetPersonContact(Guid id)
-		{
+        public async Task<Response<PersonContactViewModel>> GetPersonContact(Guid id)
+        {
             var response = new Response<PersonContactViewModel>();
             var entity = await _context.PersonContacts.Where(op => op.Id == id).FirstOrDefaultAsync();
             var mappedObject = _mapper.Map<PersonContactViewModel>(entity);
@@ -109,7 +110,27 @@ namespace Contact.Framework.Services.Concrete
             return response;
         }
 
-		public async Task<Response<PersonViewModel>> UpdatePerson(UpdatePersonViewModel person)
+        public Response<List<ContractPersonReport>> GetReport()
+        {
+            var response = new Response<List<ContractPersonReport>>();
+            var list = _context.PersonContacts
+                .Where(op => op.ContactType == ContactType.Location)
+                .GroupBy(op => op.Description)
+                .Select(op => new ContractPersonReport()
+                {
+                    Location = op.Key,
+                    LocationCount = op.Count()
+                }).ToList();
+
+            foreach (var item in list)
+            {
+                item.LocationPersonCount = _context.People.Count(op => op.PersonContacts.Any(x => x.Description == item.Location));
+            }
+            response.SetData(list);
+            return response;
+        }
+
+        public async Task<Response<PersonViewModel>> UpdatePerson(UpdatePersonViewModel person)
         {
             var response = new Response<PersonViewModel>();
             var entity = await _context.People.Where(op => op.Id == person.Id).FirstOrDefaultAsync();

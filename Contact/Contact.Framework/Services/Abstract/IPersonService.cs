@@ -14,5 +14,6 @@ namespace Contact.Framework.Services.Abstract
         Task<Response<PersonContactViewModel>> CreatePersonContact(CreatePersonContactViewModel personContact);
         Task<Response<PersonContactViewModel>> UpdatePersonContact(UpdatePersonContactViewModel personContact);
         Task<Response<bool>> DeletePersonContact(Guid id);
+        Response<List<ContractPersonReport>> GetReport();
     }
 }

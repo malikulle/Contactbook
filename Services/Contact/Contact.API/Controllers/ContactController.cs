@@ -17,6 +17,12 @@ namespace Contact.API.Controllers
             _personService = personService;
         }
 
+        [HttpGet("report")]
+        public Response<List<ContractPersonReport>> GetReport()
+        {
+            return _personService.GetReport();
+        }
+
         [HttpGet("personList")]
         public async Task<Response<List<PersonViewModel>>> GetPeople()
         {
@@ -70,5 +76,7 @@ namespace Contact.API.Controllers
         {
             return await _personService.DeletePersonContact(id);
         }
+
+        
     }
 }
