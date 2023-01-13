@@ -41,8 +41,10 @@ To start project make sure that `NET6` is installed in your local.
 - `CommonProject` is Shared Project for all other projects. This project contains ; BaseEntity,ExcelHelper,Extensions,HttpHelper,Response Object and ViewModels,
 - `Services.Contact.Contact.API` is Contact Microservice. 
 - `Services.Contact.Contact.Framework` is Contact Microservice manager. This layer contains ; ContactDbContext,Entities,MappingProfile,Migrations,Services and ContactServiceRegistration.
+- `Services.Contact.Contact.Test` is Contact Microservice Test.
 - `Services.Contact.Report.API` is Report Microservice.
 - `Services.Contact.Report.Framework` is Report Microservice manager. This layer contains ; ReportDbContext,Entities,MappingProfile,Migrations,RabbitMQ Integration and Services. IContactHttpClientService helps to comminacate with `Contact Microservice`.
+- `Services.Contact.Report.Test` is Report Microservice Test.
 - `Report.WorkerService` is RabbitMQ Consumer.
 - `Contact.UI` is view of the project.
 - `Contact.UI.Framework` is Contact UI manager. In this project we can sent request to `Contact Microservice` and `Report Microservice`.
