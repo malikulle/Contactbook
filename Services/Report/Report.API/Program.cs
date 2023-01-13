@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<APISettings>(builder.Configuration.GetSection("APISettings"));
 builder.Services.AddDbContext<ReportDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DbContext")));
-builder.Services.AddReportServices();
+builder.Services.AddReportServices(builder.Configuration);
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())

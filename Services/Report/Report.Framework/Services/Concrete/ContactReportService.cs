@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Report.Framework.Context;
 using Report.Framework.Entity;
+using Report.Framework.RabbitMQ;
 using Report.Framework.Services.Abstract;
 
 namespace Report.Framework.Services.Concrete
@@ -15,24 +16,26 @@ namespace Report.Framework.Services.Concrete
     public class ContactReportService : IContactReportService
     {
         private readonly ReportDbContext _context;
+        private readonly RabbitMQPublisher _rabbitMQPublisher;
         private readonly IMapper _mapper;
         private readonly IExcelService _excelService;
         private readonly APISettings _settings;
 
 
-        public ContactReportService(ReportDbContext context, IMapper mapper, IExcelService excelService, IOptions<APISettings> options)
+        public ContactReportService(ReportDbContext context, IMapper mapper, IExcelService excelService, IOptions<APISettings> options, RabbitMQPublisher rabbitMQPublisher)
         {
             _context = context;
             _mapper = mapper;
             _excelService = excelService;
             _settings = options.Value;
+            _rabbitMQPublisher = rabbitMQPublisher;
         }
 
         public async Task<Response<bool>> DoneRequest(Guid Id)
         {
             var response = new Response<bool>();
             var entity = _context.ContactReports.Where(op => op.Id == Id).FirstOrDefault();
-            if (entity != null && entity.ReportType != ReportType.Done)
+            if (entity != null && string.IsNullOrEmpty(entity.FilePath))
             {
                 entity.ReportType = ReportType.Done;
                 var path = _excelService.ExportExcel(Id);
@@ -51,7 +54,7 @@ namespace Report.Framework.Services.Concrete
             response.SetData(mappedList);
             foreach (var item in response.Data)
             {
-                if(!string.IsNullOrEmpty(item.FilePath))
+                if (!string.IsNullOrEmpty(item.FilePath))
                     item.FilePath = _settings.CDNBasePath + item.FilePath;
             }
             return response;
@@ -68,6 +71,8 @@ namespace Report.Framework.Services.Concrete
             await _context.SaveChangesAsync();
             var mappedEntity = _mapper.Map<ContactReportViewModel>(entity);
             response.SetData(mappedEntity);
+            // Send To Rabbit MQ
+            _rabbitMQPublisher.Publish(mappedEntity);
             return response;
         }
     }
