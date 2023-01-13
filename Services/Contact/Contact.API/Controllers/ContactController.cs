@@ -66,7 +66,7 @@ namespace Contact.API.Controllers
         }
 
         [HttpPut("personContact")]
-        public async Task<Response<PersonContactViewModel>> UpdatePerson([FromBody] UpdatePersonContactViewModel personContact)
+        public async Task<Response<PersonContactViewModel>> UpdatePersonContact([FromBody] UpdatePersonContactViewModel personContact)
         {
             return await _personService.UpdatePersonContact(personContact);
         }
