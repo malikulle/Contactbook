@@ -13,8 +13,8 @@
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Contact\Contact.Framework\Contact.Framework.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Contact.Framework\Contact.Framework.csproj" />
+	</ItemGroup>
 
 </Project>

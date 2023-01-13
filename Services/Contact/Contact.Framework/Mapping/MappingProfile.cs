@@ -2,6 +2,7 @@
 using CommonProject.ViewModels.Person;
 using Contact.Framework.Entity;
 
+
 namespace Contact.Framework.Mapping
 {
     internal class MappingProfile : Profile
